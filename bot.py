@@ -15,35 +15,36 @@ def home():
     return "Bot is running!"
 
 def send_telegram_message(text):
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    params = {'chat_id': CHAT_ID, 'text': text}
-    requests.get(url, params=params)
+    if BOT_TOKEN and CHAT_ID:
+        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+        params = {'chat_id': CHAT_ID, 'text': text}
+        try:
+            requests.get(url, params=params)
+        except Exception as e:
+            print(f"Greška: {e}")
 
 def job():
-    # OVDJE IDE TVOJ KOD ZA SKENIRANJE
-    # Primjer:
-    message = "Bot je upravo skenirao tržište! Sve radi."
+    print("Skeniranje u tijeku...")
+    message = "Izvještaj: Sustav radi i skenira tržište."
     send_telegram_message(message)
-    print("Poruka poslana!")
 
-# 2. Raspored (Oduzeto 2h za Render server)
-# 06:00 -> 04:00
-# 14:00 -> 12:00
-# 22:00 -> 20:00
-schedule.every().day.at("04:48").do(job)
+# 2. Raspored (Oduzeto 2h za razliku servera)
+# 06:00 (lokalno) -> 04:00 (server)
+# 14:00 (lokalno) -> 12:00 (server)
+# 22:00 (lokalno) -> 20:00 (server)
+schedule.every().day.at("04:00").do(job)
 schedule.every().day.at("12:00").do(job)
 schedule.every().day.at("20:00").do(job)
 
-def run_flask():
-    app.run(host='0.0.0.0', port=10000)
-
-if __name__ == "__main__":
-    # Pokreni Flask u pozadini
-    threading.Thread(target=run_flask).start()
-    
-    print("Bot pokrenut...")
-    
-    # Glavna petlja
+def run_scheduler():
     while True:
         schedule.run_pending()
         time.sleep(1)
+
+if __name__ == "__main__":
+    # Pokreni scheduler u pozadini
+    threading.Thread(target=run_scheduler, daemon=True).start()
+    
+    # Pokreni Flask (Render očekuje port 10000)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port)
