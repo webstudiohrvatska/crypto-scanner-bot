@@ -69,7 +69,7 @@ def run_scanner():
         print(f"Greška: {e}")
 
 # --- 3. RASPPORED ---
-schedule.every().day.at("4:30:00").do(run_scanner)
+schedule.every().day.at("4:32").do(run_scanner)
 schedule.every().day.at("14:00").do(run_scanner)
 schedule.every().day.at("22:00").do(run_scanner)
 
