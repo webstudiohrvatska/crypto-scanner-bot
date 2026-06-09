@@ -30,7 +30,7 @@ def job():
 # 06:00 -> 04:00
 # 14:00 -> 12:00
 # 22:00 -> 20:00
-schedule.every().day.at("04:00").do(job)
+schedule.every().day.at("04:48").do(job)
 schedule.every().day.at("12:00").do(job)
 schedule.every().day.at("20:00").do(job)
 
