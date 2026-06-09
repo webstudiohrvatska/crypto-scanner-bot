@@ -5,8 +5,9 @@ import schedule
 import requests
 from flask import Flask
 
-# 1. Postavke
 app = Flask(__name__)
+
+# Učitavanje varijabli
 BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
 CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
 
@@ -20,23 +21,22 @@ def send_telegram_message(text):
         params = {'chat_id': CHAT_ID, 'text': text}
         try:
             requests.get(url, params=params)
+            print("Telegram poruka poslana!")
         except Exception as e:
-            print(f"Greška: {e}")
+            print(f"Greška pri slanju: {e}")
 
 def job():
-    print("Skeniranje u tijeku...")
-    message = "Izvještaj: Sustav radi i skenira tržište."
-    send_telegram_message(message)
+    send_telegram_message("Sustav je aktivan i skenira tržište.")
 
-# 2. Raspored (Oduzeto 2h za razliku servera)
-# 06:00 (lokalno) -> 04:00 (server)
-# 14:00 (lokalno) -> 12:00 (server)
-# 22:00 (lokalno) -> 20:00 (server)
-schedule.every().day.at("04:53").do(job)
+# Raspored
+schedule.every().day.at("04:00").do(job)
 schedule.every().day.at("12:00").do(job)
 schedule.every().day.at("20:00").do(job)
 
 def run_scheduler():
+    # TEST: Pošalji poruku odmah pri pokretanju da vidimo radi li bot
+    send_telegram_message("Bot se uspješno pokrenuo na serveru!")
+    
     while True:
         schedule.run_pending()
         time.sleep(1)
@@ -45,6 +45,6 @@ if __name__ == "__main__":
     # Pokreni scheduler u pozadini
     threading.Thread(target=run_scheduler, daemon=True).start()
     
-    # Pokreni Flask (Render očekuje port 10000)
+    # Pokreni Flask
     port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
