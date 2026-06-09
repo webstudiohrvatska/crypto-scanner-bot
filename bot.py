@@ -32,7 +32,7 @@ def job():
 # 06:00 (lokalno) -> 04:00 (server)
 # 14:00 (lokalno) -> 12:00 (server)
 # 22:00 (lokalno) -> 20:00 (server)
-schedule.every().day.at("04:00").do(job)
+schedule.every().day.at("04:53").do(job)
 schedule.every().day.at("12:00").do(job)
 schedule.every().day.at("20:00").do(job)
 
